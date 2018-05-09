@@ -85,15 +85,30 @@ int main(void)
 	glfwSetCharCallback(g_pWindow, (GLFWcharfun)TwEventCharGLFW);                      // - Directly redirect GLFW char events to AntTweakBar
 	glfwSetWindowSizeCallback(g_pWindow, WindowSizeCallBack);
 
-	//create the toolbar
-	g_pToolBar = TwNewBar("CG UFPel ToolBar");
-	// Add 'speed' to 'bar': it is a modifable (RW) variable of type TW_TYPE_DOUBLE. Its key shortcuts are [s] and [S].
-	double speed = 0.0;
-	TwAddVarRW(g_pToolBar, "speed", TW_TYPE_DOUBLE, &speed, " label='Rot speed' min=0 max=2 step=0.01 keyIncr=s keyDecr=S help='Rotation speed (turns/second)' ");
-	// Add 'bgColor' to 'bar': it is a modifable variable of type TW_TYPE_COLOR3F (3 floats color)
-	vec3 oColor(0.0f);
-	TwAddVarRW(g_pToolBar, "bgColor", TW_TYPE_COLOR3F, &oColor[0], " label='Background color' ");
 
+	// CRIACAO DA TOOLBAR
+	g_pToolBar = TwNewBar("CG UFPel ToolBar");
+	/*typedef enum { SUZANNE, GOOSE, CUBE } MESH_TYPE;
+	// cria uma variavel para a mesh atual selecionada
+	MESH_TYPE currentMesh = SUZANNE;
+	TwEnumVal meshs[] = { { SUZANNE, "Suzanne" },{ GOOSE, "Goose" },{ CUBE, "Cube" } };
+	TwType meshType = TwDefineEnum("Malha", meshs, 3);
+
+	typedef enum { UVMAP_T, GOOSE_T } TEXTURE_TYPE;
+	TEXTURE_TYPE currentTexture = UVMAP_T;
+	TwEnumVal textures[] = { { UVMAP_T, "uvmap" },{ GOOSE_T, "goose" } };
+	TwType textureType = TwDefineEnum("Textura", textures, 2);
+
+	//Para adicionar um novo modelo
+	glm::vec3 posicao_novomodelo(0);
+	TwAddSeparator(g_pToolBar, "Modelo", NULL);
+	TwAddButton(g_pToolBar, "Parametros Novo Modelo", NULL, NULL, "");
+	TwAddVarRW(g_pToolBar, "Modelo: ", meshType, &currentMesh, NULL);
+	TwAddVarRW(g_pToolBar, "Textura: ", textureType, &currentTexture, NULL);
+	TwAddVarRW(g_pToolBar, "Posicao:", TW_TYPE_DIR3F, &posicao_novomodelo, NULL);
+	*/
+	// FIM TOOLBAR
+	
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(g_pWindow, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetCursorPos(g_pWindow, g_nWidth / 2, g_nHeight / 2);
@@ -109,46 +124,28 @@ int main(void)
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
 
-	
-
-	// Create and compile our GLSL program from the shaders
-	//GLuint programID = LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
-
-	// Get a handle for our "MVP" uniform
-	//GLuint MatrixID      = glGetUniformLocation(programID, "MVP");
-	//GLuint ViewMatrixID  = glGetUniformLocation(programID, "V");
-	//GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
-
-	// Load the texture
-	//GLuint Texture = loadDDS("mesh/uvmap.DDS");
-
-	// Get a handle for our "myTextureSampler" uniform
-	//GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");	
-
 	sceneManager manager = sceneManager();
+	GLuint ViewMatrixID = glGetUniformLocation(manager.getProgramID(), "V");
 
-	mesh suzan = mesh("mesh/suzanne.obj");
-	mesh goose = mesh("mesh/goose.obj");
-	model suz = model("mesh/uvmap.DDS", manager.getProgramID(), glm::vec3(1.0), 0);
+	glUseProgram(manager.getProgramID());
 	
-
-
-	// Get a handle for our "LightPosition" uniform
-	//glUseProgram(programID);
-	//GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
+	manager.addMesh("mesh/suzanne.obj");
+	manager.addMesh("mesh/goose.obj");
 
 	// For speed computation
 	double lastTime = glfwGetTime();
 	int nbFrames    = 0;
+	vec3 pos(1);
+	manager.addModel("mesh/uvmap.DDS", pos, 0);
 
 	do{
         check_gl_error();
 
         //use the control key to free the mouse
 		if (glfwGetKey(g_pWindow, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS)
-			nUseMouse = 1;
-		else
 			nUseMouse = 0;
+		else
+			nUseMouse = 1;
 
 		// Measure speed
 		double currentTime = glfwGetTime();
@@ -162,7 +159,7 @@ int main(void)
 
 		// Carrega os buffers para desenhar
 		//goose.getBuffers();
-		suzan.getBuffers();
+		//suzan.getBuffers();
 		
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -172,49 +169,33 @@ int main(void)
 
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
-		glm::mat4 ProjectionMatrix = getProjectionMatrix();
-		glm::mat4 ViewMatrix       = getViewMatrix();
-		glm::mat4 ModelMatrix      = glm::mat4(1.0);
-		glm::mat4 MVP              = ProjectionMatrix * ViewMatrix * ModelMatrix;
+		mat4 ProjectionMatrix = getProjectionMatrix();
+		mat4 ViewMatrix       = getViewMatrix();
+		//glm::mat4 ModelMatrix      = glm::mat4(1.0);
+		//glm::mat4 MVP              = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-		// Send our transformation to the currently bound shader,
-		// in the "MVP" uniform
-		//glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-		//glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		//glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-
-		//glm::vec3 lightPos = glm::vec3(4, 4, 4);
-		//glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
-
-		// Bind our texture in Texture Unit 0
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, Texture);
-		// Set our "myTextureSampler" sampler to user Texture Unit 0
-		//glUniform1i(TextureID, 0);
-
-		// Draw the triangles !
-		goose.drawMesh();
-
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
-
-		// Draw tweak bars
-		TwDraw();
-
-		// Swap buffers
-		glfwSwapBuffers(g_pWindow);
-		glfwPollEvents();
+		if ((manager.getModels()).size() > 0) {
+			manager.drawScenario(ProjectionMatrix, ViewMatrix, ViewMatrixID, g_pWindow);
+		}
+		else {
+			// Clear the screen
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			// Use our shader
+			glUseProgram(manager.getProgramID());
+			// Draw tweak bars
+			TwDraw();
+			// Swap buffers
+			glfwSwapBuffers(g_pWindow);
+			glfwPollEvents();
+		}
 
 	} // Check if the ESC key was pressed or the window was closed
 	while (glfwGetKey(g_pWindow, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 	glfwWindowShouldClose(g_pWindow) == 0);
 
 	// Cleanup VBO and shader
-	suzan.clear();
+	manager.clear();
 	glDeleteProgram(manager.getProgramID());
-	//glDeleteTextures(1, &Texture);
-	//glDeleteVertexArrays(1, &VertexArrayID);
 
 	// Terminate AntTweakBar and GLFW
 	TwTerminate();
@@ -222,4 +203,3 @@ int main(void)
 
 	return 0;
 }
-
