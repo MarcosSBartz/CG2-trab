@@ -27,6 +27,8 @@ using namespace glm;
 #include <vboindexer.hpp>
 #include <glerror.hpp>
 #include<mesh.hpp>
+#include<model.hpp>
+#include<sceneManager.hpp>
 
 void WindowSizeCallBack(GLFWwindow *pWindow, int nWidth, int nHeight) {
 
@@ -110,27 +112,30 @@ int main(void)
 	
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
+	//GLuint programID = LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
 
 	// Get a handle for our "MVP" uniform
-	GLuint MatrixID      = glGetUniformLocation(programID, "MVP");
-	GLuint ViewMatrixID  = glGetUniformLocation(programID, "V");
-	GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
+	//GLuint MatrixID      = glGetUniformLocation(programID, "MVP");
+	//GLuint ViewMatrixID  = glGetUniformLocation(programID, "V");
+	//GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
 
 	// Load the texture
-	GLuint Texture = loadDDS("mesh/uvmap.DDS");
+	//GLuint Texture = loadDDS("mesh/uvmap.DDS");
 
 	// Get a handle for our "myTextureSampler" uniform
-	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");	
+	//GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");	
+
+	sceneManager manager = sceneManager();
 
 	mesh suzan = mesh("mesh/suzanne.obj");
 	mesh goose = mesh("mesh/goose.obj");
+	model suz = model("mesh/uvmap.DDS", manager.getProgramID(), glm::vec3(1.0), 0);
 	
 
 
 	// Get a handle for our "LightPosition" uniform
-	glUseProgram(programID);
-	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
+	//glUseProgram(programID);
+	//GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
 	// For speed computation
 	double lastTime = glfwGetTime();
@@ -156,14 +161,14 @@ int main(void)
 		}
 
 		// Carrega os buffers para desenhar
-		goose.getBuffers();
+		//goose.getBuffers();
 		suzan.getBuffers();
 		
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Use our shader
-		glUseProgram(programID);
+		glUseProgram(manager.getProgramID());
 
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
@@ -174,18 +179,18 @@ int main(void)
 
 		// Send our transformation to the currently bound shader,
 		// in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+		//glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		//glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		//glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 
-		glm::vec3 lightPos = glm::vec3(4, 4, 4);
-		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
+		//glm::vec3 lightPos = glm::vec3(4, 4, 4);
+		//glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
 		// Bind our texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, Texture);
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, Texture);
 		// Set our "myTextureSampler" sampler to user Texture Unit 0
-		glUniform1i(TextureID, 0);
+		//glUniform1i(TextureID, 0);
 
 		// Draw the triangles !
 		goose.drawMesh();
@@ -207,7 +212,7 @@ int main(void)
 
 	// Cleanup VBO and shader
 	suzan.clear();
-	glDeleteProgram(programID);
+	glDeleteProgram(manager.getProgramID());
 	//glDeleteTextures(1, &Texture);
 	//glDeleteVertexArrays(1, &VertexArrayID);
 
