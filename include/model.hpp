@@ -15,9 +15,6 @@ using namespace glm;
 
 #include <texture.hpp>
 
-
-
-
 class model
 {
 private:
@@ -36,5 +33,5 @@ public:
 	GLuint getTexture();
 	GLuint getTextureID();
 	GLuint getMeshID();
+	void clear();
 };
-

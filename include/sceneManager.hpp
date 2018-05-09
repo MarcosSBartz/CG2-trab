@@ -11,6 +11,9 @@
 // Include GLFW
 #include <glfw3.h>
 
+// Include AntTweakBar
+#include <AntTweakBar.h>
+
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,10 +26,10 @@ using namespace glm;
 
 class sceneManager
 {
-	glm::vec3 lightPos;
 	GLuint programID;
 	GLuint LightID;
 	GLuint MatrixID;
+	GLuint VertexArrayID;
 	std::vector<mesh> meshs;
 	std::vector<model> models;
 	
@@ -37,8 +40,9 @@ public:
 	GLuint getMatrixID();
 	void addModel(const char* Texture, glm::vec3 position, GLuint meshID);
 	void addMesh(const char* object);
+	void clear();
+	std::vector<model> getModels();
 
 	void drawScenario(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix,
 		GLuint ViewMatrixID, GLFWwindow* g_pWindow);
 };
-

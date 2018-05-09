@@ -38,4 +38,3 @@ public:
 	void drawMesh();
 	void clear();
 };
-
