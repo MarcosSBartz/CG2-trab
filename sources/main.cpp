@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <vector>
 
+
 // Include GLEW
 #include <GL/glew.h>
 
@@ -29,6 +30,7 @@ using namespace glm;
 #include<mesh.hpp>
 #include<model.hpp>
 #include<sceneManager.hpp>
+#include "glm/ext.hpp"
 
 void WindowSizeCallBack(GLFWwindow *pWindow, int nWidth, int nHeight) {
 
@@ -88,6 +90,52 @@ int main(void)
 
 	// CRIACAO DA TOOLBAR
 	g_pToolBar = TwNewBar("CG UFPel ToolBar");
+
+	//TwAddButton(g_pToolBar, "NEW MODEL", NULL, NULL, "");
+	//TwAddVarRW(g_pToolBar, "Translation", NULL, NULL, "");
+
+
+	// Adicionar Malhas
+	typedef enum { SUZANNE, GOOSE, CUBE} MESH_TYPE;
+	MESH_TYPE currentMesh = SUZANNE;
+	TwEnumVal meshs[] = { { SUZANNE, "Suzanne" },{ GOOSE, "Goose" },{ CUBE, "Cube" } };
+	TwType meshType = TwDefineEnum("Mesh", meshs, 3);
+
+	// Adicionar texturas
+	typedef enum { UVMAP_T, GOOSE_T } TEXTURE_TYPE;
+	TEXTURE_TYPE currentTexture = UVMAP_T;
+	TwEnumVal textures[] = { { UVMAP_T, "uvmap" },{ GOOSE_T, "goose" } };
+	TwType textureType = TwDefineEnum("Texture", textures, 2);
+	
+	
+
+
+	// Criar novo modelo
+	//TwAddSeparator(g_pToolBar, "Model", NULL);
+	vec3 p_newModel(1.0);
+	TwAddButton(g_pToolBar, "New Model", NULL, NULL, "");
+	TwAddVarRW(g_pToolBar, "Model: ", meshType, &currentMesh, NULL);
+	TwAddVarRW(g_pToolBar, "Texture: ", textureType, &currentTexture, NULL);
+	TwAddVarRW(g_pToolBar, "Position:", TW_TYPE_DIR3F, &p_newModel, NULL);
+	TwAddSeparator(g_pToolBar, "", NULL);
+	
+	// Translacao
+	//TwAddSeparator(g_pToolBar, "Model", NULL);
+	vec3 p_translation(1.0);
+	double t_translation = 10;
+	TwAddButton(g_pToolBar, "Translation", NULL, NULL, "");
+	TwAddVarRW(g_pToolBar, "T Position:", TW_TYPE_DIR3F, &p_translation, NULL);
+	TwAddVarRW(g_pToolBar, "T Time: ", TW_TYPE_DOUBLE, &t_translation, NULL);
+	TwAddSeparator(g_pToolBar, "", NULL);
+	
+	// Escala
+	vec3 p_scale(2,4,6);
+	double t_scale = 5;
+	TwAddButton(g_pToolBar, "Scale", NULL, NULL, "");
+	TwAddVarRW(g_pToolBar, "S Position:", TW_TYPE_DIR3F, &p_scale, NULL);
+	TwAddVarRW(g_pToolBar, "S Time: ", TW_TYPE_DOUBLE, &t_scale, NULL);
+	TwAddSeparator(g_pToolBar, "", NULL);
+
 	/*typedef enum { SUZANNE, GOOSE, CUBE } MESH_TYPE;
 	// cria uma variavel para a mesh atual selecionada
 	MESH_TYPE currentMesh = SUZANNE;
@@ -131,12 +179,38 @@ int main(void)
 	
 	manager.addMesh("mesh/suzanne.obj");
 	manager.addMesh("mesh/goose.obj");
+	manager.addMesh("mesh/cube.obj");
 
 	// For speed computation
 	double lastTime = glfwGetTime();
 	int nbFrames    = 0;
-	vec3 pos(1);
+	vec3 pos(0);
 	manager.addModel("mesh/uvmap.DDS", pos, 0);
+	vec3 newPos(-1);
+
+	//manager.getModels()->at(0).translation(pos, 5);
+
+	
+	/* TESTE TRANSLATE - OPENGL
+	
+	//Builds a translation 4 * 4 matrix created from a vector of 3 components.
+	glm::mat4 myMatrix = glm::translate(glm::mat4(), glm::vec3(10.0f, 0.0f, 0.0f));
+	glm::vec4 myVector(10.0f, 10.0f, 10.0f, 1.0f);
+	glm::vec4 transformedVector = myMatrix * myVector; // guess the result
+
+	std::cout << glm::to_string(myMatrix) << std::endl;
+
+	std::cout << glm::to_string(transformedVector) << std::endl;
+
+	*/
+
+	vec3 n1(10, 10, 10);
+	vec3 n2(5, 5, 5);
+	vec3 r = n1 * n2;
+
+	uint meshID;
+	uint currentModelID = 0;
+	char *texture;
 
 	do{
         check_gl_error();
@@ -149,6 +223,7 @@ int main(void)
 
 		// Measure speed
 		double currentTime = glfwGetTime();
+
 		nbFrames++;
 		if (currentTime - lastTime >= 1.0){ // If last prinf() was more than 1sec ago
 			// printf and reset
@@ -174,7 +249,38 @@ int main(void)
 		//glm::mat4 ModelMatrix      = glm::mat4(1.0);
 		//glm::mat4 MVP              = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-		if ((manager.getModels()).size() > 0) {
+		// Criar novo modelo
+		if (glfwGetKey(g_pWindow, GLFW_KEY_SPACE) == GLFW_PRESS && (currentTime > lastTime + 0.5)) {
+			lastTime = glfwGetTime();
+			// Parametros do novo modelo
+			if (currentMesh == SUZANNE)
+				meshID = 0;
+			else if (currentMesh == GOOSE)
+				meshID = 1;
+			else if (currentMesh == CUBE)
+				meshID = 2;
+			if (currentTexture == UVMAP_T)
+				texture = "mesh/uvmap.DDS";
+			else
+				texture = "mesh/goose.DDS";
+			manager.addModel(texture, p_newModel, meshID);
+			currentModelID =manager.getModels()->size() -1;
+		}
+
+		// Fazer translacao
+		if (glfwGetKey(g_pWindow, GLFW_KEY_T) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
+			lastTime = glfwGetTime();
+			manager.getModels()->at(currentModelID).translateOP(p_translation, t_translation);
+		}
+
+		// Fazer escala
+		if (glfwGetKey(g_pWindow, GLFW_KEY_S) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
+			lastTime = glfwGetTime();
+			manager.getModels()->at(currentModelID).scaleOP(p_scale, t_scale);
+		}
+		
+		manager.execTransformations();
+		if ((manager.getModels())->size() > 0) {
 			manager.drawScenario(ProjectionMatrix, ViewMatrix, ViewMatrixID, g_pWindow);
 		}
 		else {

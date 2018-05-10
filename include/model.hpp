@@ -23,15 +23,32 @@ private:
 	GLuint TextureID;
 	GLuint ModelMatrixID;
 	glm::mat4 ModelMatrix;
+	bool flag;
+
+	std::vector<mat4> transformations;
 
 
 public:
+	// constructor
 	model(const char* Texture, GLuint programID, glm::vec3 position, GLuint meshID);
 
+	// getters
 	glm::mat4 getModelMatrix();
 	GLuint getModelMatrixID();
 	GLuint getTexture();
 	GLuint getTextureID();
 	GLuint getMeshID();
+	int getFlag();
+	void setFlag(int newFlag);
+
+	// setters
+	void setModelMatrix(mat4 newMatrix);
+
+	// misc
 	void clear();
+	void transformationMatrix();
+
+	// transformations
+	void translateOP(vec3 translation, double time);
+	void scaleOP(vec3 scaleSize, double time);
 };

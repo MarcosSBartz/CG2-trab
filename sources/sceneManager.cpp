@@ -90,6 +90,26 @@ void sceneManager::clear() {
 	glDeleteVertexArrays(1, &VertexArrayID);
 }
 
-std::vector<model> sceneManager::getModels() {
-	return models;
+std::vector<model>* sceneManager::getModels() {
+	return &models;
+}
+/*
+void sceneManager::execTransformations() {
+	for (auto it = models.begin(); it != models.end(); it++) {
+		if ((*it).getFlag() == false) {
+			printf("Chama");
+		}
+		if ((*it).getFlag()) {
+			printf("nemMeVIU");
+			(*it).transformationMatrix();
+		}
+	}
+}*/
+
+void sceneManager::execTransformations() {
+	for (int i = 0; i < models.size(); i++) {
+		if (models.at(i).getFlag()) {
+			models.at(i).transformationMatrix();
+		}
+	}
 }

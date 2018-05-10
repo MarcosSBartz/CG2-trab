@@ -34,15 +34,28 @@ class sceneManager
 	std::vector<model> models;
 	
 public:
+	// constructors
 	sceneManager();
+	
+
+	// getters
 	GLuint getProgramID();
 	GLuint getLightID();
 	GLuint getMatrixID();
-	void addModel(const char* Texture, glm::vec3 position, GLuint meshID);
-	void addMesh(const char* object);
-	void clear();
-	std::vector<model> getModels();
+	std::vector<model> *getModels();
 
+	// setters
+
+	
+	// misc
+	void clear();
 	void drawScenario(glm::mat4 ProjectionMatrix, glm::mat4 ViewMatrix,
 		GLuint ViewMatrixID, GLFWwindow* g_pWindow);
+
+	void addModel(const char* Texture, glm::vec3 position, GLuint meshID);
+	void addMesh(const char* object);
+
+	void execTransformations();
+
+
 };
