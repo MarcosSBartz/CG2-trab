@@ -39,7 +39,7 @@ public:
 	GLuint getTextureID();
 	GLuint getMeshID();
 	int getFlag();
-	void setFlag(int newFlag);
+	//void setFlag(int newFlag);
 
 	// setters
 	void setModelMatrix(mat4 newMatrix);
@@ -51,4 +51,12 @@ public:
 	// transformations
 	void translateOP(vec3 translation, double time);
 	void scaleOP(vec3 scaleSize, double time);
+	void rotateOP(vec3 rotation, float angle, double time);
+	void shearOP(vec3 shear, double time);
+	void shear2(vec3 shear, double time, char axis);
+	void rotateAroundPoint(vec3 point, vec3 rotation, float angle, double time);
+	void rotateAroundAxis(vec3 rot, float angle, double time);
+	void back(vec3 mirr, double time);
+
+	void translateScale(vec3 translation, vec3 scaleSize, vec3 rotation, float angle, double time);
 };

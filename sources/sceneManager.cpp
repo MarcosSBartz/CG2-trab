@@ -79,13 +79,9 @@ void sceneManager::drawScenario(mat4 ProjectionMatrix, mat4 ViewMatrix,
 
 void sceneManager::clear() {
 	for (unsigned i = 0; i < models.size(); i++)
-	{
 		models.at(i).clear();
-	}
 	for (unsigned i = 0; i < meshs.size(); i++)
-	{
 		meshs.at(i).clear();
-	}
 	glDeleteProgram(programID);
 	glDeleteVertexArrays(1, &VertexArrayID);
 }
@@ -93,23 +89,12 @@ void sceneManager::clear() {
 std::vector<model>* sceneManager::getModels() {
 	return &models;
 }
-/*
+
 void sceneManager::execTransformations() {
 	for (auto it = models.begin(); it != models.end(); it++) {
-		if ((*it).getFlag() == false) {
-			printf("Chama");
-		}
 		if ((*it).getFlag()) {
-			printf("nemMeVIU");
 			(*it).transformationMatrix();
 		}
 	}
-}*/
-
-void sceneManager::execTransformations() {
-	for (int i = 0; i < models.size(); i++) {
-		if (models.at(i).getFlag()) {
-			models.at(i).transformationMatrix();
-		}
-	}
 }
+

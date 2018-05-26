@@ -91,10 +91,6 @@ int main(void)
 	// CRIACAO DA TOOLBAR
 	g_pToolBar = TwNewBar("CG UFPel ToolBar");
 
-	//TwAddButton(g_pToolBar, "NEW MODEL", NULL, NULL, "");
-	//TwAddVarRW(g_pToolBar, "Translation", NULL, NULL, "");
-
-
 	// Adicionar Malhas
 	typedef enum { SUZANNE, GOOSE, CUBE} MESH_TYPE;
 	MESH_TYPE currentMesh = SUZANNE;
@@ -106,57 +102,80 @@ int main(void)
 	TEXTURE_TYPE currentTexture = UVMAP_T;
 	TwEnumVal textures[] = { { UVMAP_T, "uvmap" },{ GOOSE_T, "goose" } };
 	TwType textureType = TwDefineEnum("Texture", textures, 2);
-	
-	
 
-
+	// Shear mode
+	typedef enum { X, Y, Z } AXIS_TYPE;
+	AXIS_TYPE currentAxis = X;
+	TwEnumVal axis[] = { { X, "X" },{ Y, "Y" },{ Z, "Z" } };
+	TwType axisType = TwDefineEnum("Axis", axis, 3);
+	
 	// Criar novo modelo
-	//TwAddSeparator(g_pToolBar, "Model", NULL);
-	vec3 p_newModel(1.0);
+	vec3 positionNewModel(1.0);
 	TwAddButton(g_pToolBar, "New Model", NULL, NULL, "");
 	TwAddVarRW(g_pToolBar, "Model: ", meshType, &currentMesh, NULL);
 	TwAddVarRW(g_pToolBar, "Texture: ", textureType, &currentTexture, NULL);
-	TwAddVarRW(g_pToolBar, "Position:", TW_TYPE_DIR3F, &p_newModel, NULL);
+	TwAddVarRW(g_pToolBar, "Position:", TW_TYPE_DIR3F, &positionNewModel, NULL);
 	TwAddSeparator(g_pToolBar, "", NULL);
 	
 	// Translacao
-	//TwAddSeparator(g_pToolBar, "Model", NULL);
-	vec3 p_translation(1.0);
-	double t_translation = 10;
+	vec3 positionTranslation(1.0);
+	double timeTranslation = 10;
 	TwAddButton(g_pToolBar, "Translation", NULL, NULL, "");
-	TwAddVarRW(g_pToolBar, "T Position:", TW_TYPE_DIR3F, &p_translation, NULL);
-	TwAddVarRW(g_pToolBar, "T Time: ", TW_TYPE_DOUBLE, &t_translation, NULL);
+	TwAddVarRW(g_pToolBar, "T Position:", TW_TYPE_DIR3F, &positionTranslation, NULL);
+	TwAddVarRW(g_pToolBar, "T Time: ", TW_TYPE_DOUBLE, &timeTranslation, NULL);
 	TwAddSeparator(g_pToolBar, "", NULL);
 	
 	// Escala
-	vec3 p_scale(2,4,6);
-	double t_scale = 5;
+	vec3 positionScale(2,4,6);
+	double timeScale = 5;
 	TwAddButton(g_pToolBar, "Scale", NULL, NULL, "");
-	TwAddVarRW(g_pToolBar, "S Position:", TW_TYPE_DIR3F, &p_scale, NULL);
-	TwAddVarRW(g_pToolBar, "S Time: ", TW_TYPE_DOUBLE, &t_scale, NULL);
+	TwAddVarRW(g_pToolBar, "S Position:", TW_TYPE_DIR3F, &positionScale, NULL);
+	TwAddVarRW(g_pToolBar, "S Time: ", TW_TYPE_DOUBLE, &timeScale, NULL);
 	TwAddSeparator(g_pToolBar, "", NULL);
 
-	/*typedef enum { SUZANNE, GOOSE, CUBE } MESH_TYPE;
-	// cria uma variavel para a mesh atual selecionada
-	MESH_TYPE currentMesh = SUZANNE;
-	TwEnumVal meshs[] = { { SUZANNE, "Suzanne" },{ GOOSE, "Goose" },{ CUBE, "Cube" } };
-	TwType meshType = TwDefineEnum("Malha", meshs, 3);
+	// Rotacao
+	vec3 positionRotation(2, 4, 6);
+	int32 angleRotation = 180;
+	double timeRotation = 5;
+	TwAddButton(g_pToolBar, "Rotation", NULL, NULL, "");
+	TwAddVarRW(g_pToolBar, "R Position:", TW_TYPE_DIR3F, &positionRotation, NULL);
+	TwAddVarRW(g_pToolBar, "R Angle: ", TW_TYPE_INT32, &angleRotation, NULL);
+	TwAddVarRW(g_pToolBar, "R Time: ", TW_TYPE_DOUBLE, &timeRotation, NULL);
+	//TwAddVarRW(g_pToolBar, "R Angle: ", TW_TYPE_DOUBLE, &angle, NULL);
+	TwAddSeparator(g_pToolBar, "", NULL);
 
-	typedef enum { UVMAP_T, GOOSE_T } TEXTURE_TYPE;
-	TEXTURE_TYPE currentTexture = UVMAP_T;
-	TwEnumVal textures[] = { { UVMAP_T, "uvmap" },{ GOOSE_T, "goose" } };
-	TwType textureType = TwDefineEnum("Textura", textures, 2);
+	// Shear
+	vec3 positionShear(2, 2, 2);
+	double timeShear = 5;
+	TwAddButton(g_pToolBar, "Shear", NULL, NULL, "");
+	TwAddVarRW(g_pToolBar, "Sh Position:", TW_TYPE_DIR3F, &positionShear, NULL);
+	TwAddVarRW(g_pToolBar, "Sh Time: ", TW_TYPE_DOUBLE, &timeShear, NULL);
+	TwAddVarRW(g_pToolBar, "Sh Axis: ", axisType, &currentAxis, NULL);
+	//TwAddVarRW(g_pToolBar, "R Angle: ", TW_TYPE_DOUBLE, &angle, NULL);
+	TwAddSeparator(g_pToolBar, "", NULL);
 
-	//Para adicionar um novo modelo
-	glm::vec3 posicao_novomodelo(0);
-	TwAddSeparator(g_pToolBar, "Modelo", NULL);
-	TwAddButton(g_pToolBar, "Parametros Novo Modelo", NULL, NULL, "");
-	TwAddVarRW(g_pToolBar, "Modelo: ", meshType, &currentMesh, NULL);
-	TwAddVarRW(g_pToolBar, "Textura: ", textureType, &currentTexture, NULL);
-	TwAddVarRW(g_pToolBar, "Posicao:", TW_TYPE_DIR3F, &posicao_novomodelo, NULL);
-	*/
-	// FIM TOOLBAR
-	
+	// Rotacao ao redor de um ponto
+	vec3 positionRAP(2, 2, 1);
+	vec3 directionRAP(2, 1, 3);
+	int32 angleRAP(720);
+	double timeRAP = 5;
+	TwAddButton(g_pToolBar, "Rotation Around a Point (RAP)", NULL, NULL, "");
+	TwAddVarRW(g_pToolBar, "RAP Position:", TW_TYPE_DIR3F, &positionRAP, NULL);
+	TwAddVarRW(g_pToolBar, "RAP Direction:", TW_TYPE_DIR3F, &directionRAP, NULL);
+	TwAddVarRW(g_pToolBar, "RAP Angle: ", TW_TYPE_INT32, &angleRAP, NULL);
+	TwAddVarRW(g_pToolBar, "RAP Time: ", TW_TYPE_DOUBLE, &timeRAP, NULL);
+	TwAddSeparator(g_pToolBar, "", NULL);
+
+	// Rotacao ao redor de um eixo
+	vec3 positionRAA(4, 2, 2);
+	int32 angleRAA(222);
+	double timeRAA = 5;
+	TwAddButton(g_pToolBar, "Rotation Around a Axis (RAA)", NULL, NULL, "");
+	TwAddVarRW(g_pToolBar, "RAA Position:", TW_TYPE_DIR3F, &positionRAA, NULL);
+	TwAddVarRW(g_pToolBar, "RAA Angle: ", TW_TYPE_INT32, &angleRAA, NULL);
+	TwAddVarRW(g_pToolBar, "RAA Time: ", TW_TYPE_DOUBLE, &timeRAA, NULL);
+	TwAddSeparator(g_pToolBar, "", NULL);
+
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(g_pWindow, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetCursorPos(g_pWindow, g_nWidth / 2, g_nHeight / 2);
@@ -188,8 +207,6 @@ int main(void)
 	manager.addModel("mesh/uvmap.DDS", pos, 0);
 	vec3 newPos(-1);
 
-	//manager.getModels()->at(0).translation(pos, 5);
-
 	
 	/* TESTE TRANSLATE - OPENGL
 	
@@ -211,6 +228,7 @@ int main(void)
 	uint meshID;
 	uint currentModelID = 0;
 	char *texture;
+	char auxAxis;
 
 	do{
         check_gl_error();
@@ -263,26 +281,73 @@ int main(void)
 				texture = "mesh/uvmap.DDS";
 			else
 				texture = "mesh/goose.DDS";
-			manager.addModel(texture, p_newModel, meshID);
-			currentModelID =manager.getModels()->size() -1;
+			manager.addModel(texture, positionNewModel, meshID);
+			currentModelID = manager.getModels()->size() -1;
 		}
 
 		// Fazer translacao
 		if (glfwGetKey(g_pWindow, GLFW_KEY_T) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
 			lastTime = glfwGetTime();
-			manager.getModels()->at(currentModelID).translateOP(p_translation, t_translation);
+			manager.getModels()->at(currentModelID).translateOP(positionTranslation, timeTranslation);
 		}
 
 		// Fazer escala
 		if (glfwGetKey(g_pWindow, GLFW_KEY_S) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
 			lastTime = glfwGetTime();
-			manager.getModels()->at(currentModelID).scaleOP(p_scale, t_scale);
+			manager.getModels()->at(currentModelID).scaleOP(positionScale, timeScale);
+		}
+
+		// Fazer rotacao
+		if (glfwGetKey(g_pWindow, GLFW_KEY_R) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
+			lastTime = glfwGetTime();
+			manager.getModels()->at(currentModelID).rotateOP(positionRotation, angleRotation, timeRotation);
+		}
+
+		// Fazer shear
+		if (glfwGetKey(g_pWindow, GLFW_KEY_H) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
+			lastTime = glfwGetTime();
+			if (currentAxis == X)
+				auxAxis = 'x';
+			if (currentAxis == Y)
+				auxAxis = 'y';
+			if (currentAxis == Z)
+				auxAxis = 'z';
+			manager.getModels()->at(currentModelID).shear2(positionShear, timeShear, auxAxis);
 		}
 		
+		// Fazer rotacao ao redor de um ponto
+		if (glfwGetKey(g_pWindow, GLFW_KEY_A) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
+			lastTime = glfwGetTime();
+			manager.getModels()->at(currentModelID).rotateAroundPoint(positionRAP,directionRAP,angleRAP,timeRAP);
+		}
+
+		// Fazer rotacao ao redor de um Eixo
+		if (glfwGetKey(g_pWindow, GLFW_KEY_E) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
+			lastTime = glfwGetTime();
+			manager.getModels()->at(currentModelID).rotateAroundAxis(positionRAA, angleRAA, timeRAA);
+		}
+
+		// Translacao + rotacao + escala
+		if (glfwGetKey(g_pWindow, GLFW_KEY_C) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
+			lastTime = glfwGetTime();
+			manager.getModels()->at(currentModelID).translateScale(positionTranslation, positionScale, positionRotation, angleRotation, 5);
+		}
+
+		// back
+		if (glfwGetKey(g_pWindow, GLFW_KEY_B) == GLFW_PRESS && currentTime > (lastTime + 0.5)) {
+			lastTime = glfwGetTime();
+			manager.getModels()->at(currentModelID).back(positionTranslation, 5);
+		}
+
+
+		// Executar as mudancas
 		manager.execTransformations();
+
+		// Desenhar
 		if ((manager.getModels())->size() > 0) {
 			manager.drawScenario(ProjectionMatrix, ViewMatrix, ViewMatrixID, g_pWindow);
 		}
+		// Tela sem modelos = tela limpa
 		else {
 			// Clear the screen
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
